@@ -1,0 +1,16 @@
+from ultimate_compressor import UltimateCompressor
+
+# Image
+compressor = UltimateCompressor('image')
+compressed, _ = compressor.compress(your_image)
+reconstructed = compressor.decompress(compressed)
+
+# Video
+compressor = UltimateCompressor('video')
+compressed, _ = compressor.compress(your_video_frames)
+reconstructed = compressor.decompress(compressed)
+
+# Audio
+compressor = UltimateCompressor('audio')
+compressed, _ = compressor.compress(your_audio_samples)
+reconstructed = compressor.decompress(compressed)
