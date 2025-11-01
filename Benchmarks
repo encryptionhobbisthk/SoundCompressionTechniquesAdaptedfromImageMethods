@@ -1,1 +1,5 @@
 
+Data Type,Ratio,PSNR,Encode Time (100x100)
+Image,18.5x,39.2 dB,0.3s (GPU)
+Video,18.5x,38.8 dB,2.5s (10s clip)
+Audio,18.3x,N/A,0.2s (1s clip)
