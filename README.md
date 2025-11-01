@@ -10,7 +10,7 @@
 Advanced Python compression library combining Vedic mathematics, prime hierarchies, entropy-guided segment swapping, and hybrid codec integration. Achieves **18.5x average ratios** for images, videos, and audio.
 
 ## Features
-_ Pi digits involved
+With help of Pi digits
 - **Vedic Math**: Fast arithmetic for multi-dimensional operations
 - **Prime Hierarchies**: 1D/2D/3D encoding for structured data
 - **Entropy-Guided Swapping**: Rearrange blocks/frames for optimal compression
