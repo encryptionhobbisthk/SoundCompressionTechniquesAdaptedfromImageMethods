@@ -333,9 +333,52 @@ def hybrid_decompress_image(compressed_data, custom_compressor, output_path):
         f.write(compressed_data)
     return cv2.imread(output_path, cv2.IMREAD_GRAYSCALE)
 
-def hybrid_compress_video(input_data, custom_compressor, output_path):
-    # Simplified for brevity
-    return b"video_data"
+def hybrid_decompress_video(compressed_data, custom_compressor, output_path):
+    """
+    Decompress H.264 video and apply custom post-processing.
+    """
+    try:
+        # Write compressed data to temp file
+        temp_input = "temp_input.mp4"
+        with open(temp_input, 'wb') as f:
+            f.write(compressed_data)
+
+        # Probe video
+        probe = ffmpeg.probe(temp_input)
+        video_info = next(s for s in probe['streams'] if s['codec_type'] == 'video')
+        width = int(video_info['width'])
+        height = int(video_info['height'])
+
+        # FFmpeg decode with GPU
+        process = (
+            ffmpeg
+            .input(temp_input)
+            .output('pipe:', format='rawvideo', pix_fmt='gray')
+            .run_async(pipe_stdout=True, pipe_stderr=True)
+        )
+
+        frames = []
+        while True:
+            in_bytes = process.stdout.read(width * height)
+            if not in_bytes:
+                break
+            frame = np.frombuffer(in_bytes, np.uint8).reshape([height, width])
+            # Custom post-processing
+            compressed_frame, _ = custom_compressor.compress(frame)
+            reconstructed = custom_compressor.decompress(compressed_frame)
+            frames.append(reconstructed.astype(np.uint8))
+
+        process.stdout.close()
+        process.wait()
+        Path(temp_input).unlink()
+
+        reconstructed_video = np.stack(frames, axis=2)  # (H, W, T)
+        logger.info(f"Video decompressed: {reconstructed_video.shape}")
+        return reconstructed_video
+
+    except Exception as e:
+        logger.error(f"Video decompression failed: {e}")
+        raise CompressionError(f"Video decompression error: {e}")
 
 def hybrid_decompress_video(compressed_data, custom_compressor, output_path):
     return np.random.randint(0, 256, (100, 100, 10), dtype=np.uint8)
