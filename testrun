@@ -1,0 +1,23 @@
+
+#### Step 3: Add Tests (tests/test_compressor.py)
+Use pytest (`pip install pytest`) for credibility:
+```python
+import pytest
+from ultimate_compressor import UltimateCompressor
+
+def test_image_compression():
+    img = np.random.randint(0, 256, (64, 64), dtype=np.uint8)
+    compressor = UltimateCompressor('image')
+    compressed, _ = compressor.compress(img)
+    reconstructed = compressor.decompress(compressed)
+    assert reconstructed.shape == img.shape
+    mse = np.mean((img - reconstructed)**2)
+    assert mse < 10  # Low MSE threshold
+
+def test_roundtrip():
+    # Test for all data types
+    for data_type in ['image', 'video', 'audio']:
+        compressor = UltimateCompressor(data_type)
+        # ... (add dummy data)
+        # assert roundtrip accuracy
+        pass
